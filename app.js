@@ -13,6 +13,11 @@ app.get("/greet", (req, res) => {
   res.json({ message: "Data Received", data: `Hello ${req.query.name}` })
 })
 
+app.get("/getByNameAndProfession", (req, res) => {
+  const { name, profession } = req.query
+  res.json({ message: "Data Received", data: `${name}${" " + profession}` })
+})
+
 app.post("/greet", (req, res) => {
   res.json({ message: "Data Received", data: `Hello ${req.body.name}` })
 })
