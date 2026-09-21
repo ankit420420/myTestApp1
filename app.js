@@ -1,0 +1,22 @@
+const express = require("express")
+const PORT = 8080
+
+const app = express()
+
+app.use(express.json())
+
+app.get("/", (req, res) => {
+  res.send("Hello Express!!")
+})
+
+app.get("/greet", (req, res) => {
+  res.json({ message: "Data Received", data: `Hello ${req.query.name}` })
+})
+
+app.post("/greet", (req, res) => {
+  res.json({ message: "Data Received", data: `Hello ${req.body.name}` })
+})
+
+app.listen(PORT, () => {
+  console.log(`Express listening on port ${PORT}`)
+})
