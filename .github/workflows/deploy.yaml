@@ -1,0 +1,67 @@
+name: CI/CD - Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Create deployment package
+        run: |
+          zip -r application.zip . \
+            -x "node_modules/*" \
+               ".git/*" \
+               ".github/*"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ap-south-1
+
+      - name: Upload application to S3
+        run: |
+          aws s3 cp application.zip \
+          s3://${{ secrets.EB_S3_BUCKET }}/application-${{ github.sha }}.zip
+
+      - name: Create Elastic Beanstalk application version
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name myTestApp1 \
+            --version-label ${{ github.sha }} \
+            --source-bundle \
+            S3Bucket=${{ secrets.EB_S3_BUCKET }},S3Key=application-${{ github.sha }}.zip
+
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          aws elasticbeanstalk update-environment \
+            --environment-name myTestApp1-env \
+            --version-label ${{ github.sha }}
+
+      - name: Wait for environment deployment
+        run: |
+          aws elasticbeanstalk wait environment-updated \
+            --environment-names myTestApp1-env
