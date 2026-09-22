@@ -62,7 +62,7 @@ jobs:
       - name: Create Elastic Beanstalk application version
         run: |
           aws elasticbeanstalk create-application-version \
-            --application-name myTestApp1 \
+            --application-name myapptest1 \
             --version-label ${{ github.sha }} \
             --source-bundle \
             S3Bucket=${{ secrets.EB_S3_BUCKET }},S3Key=application-${{ github.sha }}.zip
@@ -70,10 +70,10 @@ jobs:
       - name: Deploy to Elastic Beanstalk
         run: |
           aws elasticbeanstalk update-environment \
-            --environment-name myTestApp1-env \
+            --environment-name Myapptest1-env \
             --version-label ${{ github.sha }}
 
       - name: Wait for environment deployment
         run: |
           aws elasticbeanstalk wait environment-updated \
-            --environment-names myTestApp1-env
+            --environment-names Myapptest1-env
