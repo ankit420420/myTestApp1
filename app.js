@@ -20,7 +20,7 @@ app.get("/getByNameAndProfession", (req, res) => {
 
 app.get("/updated", (req, res) => {
   const { fruits } = req.query
-  res.json({ message: "Data Received", data: fruits.join(",") })
+  res.json({ message: "Data Received", data: fruits })
 })
 
 app.post("/greet", (req, res) => {
