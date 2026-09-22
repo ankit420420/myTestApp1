@@ -20,7 +20,6 @@ app.get("/getByNameAndProfession", (req, res) => {
 
 app.get("/updated", (req, res) => {
   const { fruits } = req.query
-  console.log(fruits)
   res.json({ message: "Data Received", data: fruits })
 })
 
