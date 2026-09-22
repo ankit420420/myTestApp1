@@ -36,6 +36,18 @@ jobs:
                ".git/*" \
                ".github/*"
 
+      - name: Show GitHub OIDC subject
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const token = await core.getIDToken("sts.amazonaws.com")
+            const payload = JSON.parse(
+              Buffer.from(token.split(".")[1], "base64").toString()
+            )
+
+            console.log("OIDC subject:", payload.sub)
+            console.log("OIDC audience:", payload.aud)
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
